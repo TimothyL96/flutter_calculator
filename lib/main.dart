@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 
-void main() => runApp(MyApp());
+void main( ) => runApp( MyApp( ) );
 
 class MyApp extends StatelessWidget {
 	// This widget is the root of your application.
 	@override
-	Widget build(BuildContext context) {
+	Widget build( BuildContext context ) {
 		return MaterialApp(
 			title: 'Flutter Demo',
 			theme: ThemeData(
@@ -14,102 +13,135 @@ class MyApp extends StatelessWidget {
 				buttonTheme: ButtonThemeData(
 					height: 70,
 					buttonColor: ThemeData
-							.light()
+							.light( )
 							.buttonColor,
 					textTheme: ButtonTextTheme.primary,
+					),
 				),
-			),
-			home: MyHomePage(title: 'A Not So Simple Calculator'),
-		);
+			home: MyHomePage( title: 'A Not So Simple Calculator' ),
+			);
 	}
 }
 
 class MyHomePage extends StatefulWidget {
-	MyHomePage({Key key, this.title}) : super(key: key);
+	MyHomePage( {Key key, this.title} ) : super( key: key );
 
 	final String title;
 
 	@override
-	_MyHomePageState createState() => _MyHomePageState();
+	_MyHomePageState createState( ) => _MyHomePageState( );
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-	double answer = 0;
-	String display = "";
+	double answer;
+	String display;
+	bool start;
 
-	void _onPress(String char, double ans) {
-		setState(() {
-			if (char == "=") {
-				char.runes.forEach((int rune) {
-					String character = String.fromCharCode(rune);
-					switch (character) {
+	@override
+	void initState( ) {
+		start = true;
+		display = "";
+		answer = 0;
+		super.initState( );
+	}
+
+	void _onPress( String char ) {
+		setState( ( ) {
+			if ( char == "=" ) {
+				debugPrint( display );
+				display.runes.forEach( ( int rune ) {
+					String character = String.fromCharCode( rune );
+					switch ( character ) {
 						case "+":
 						// addition
-							debugPrint("addition!");
+							debugPrint( "addition!" );
 							break;
 						case "-":
 						// subtraction
-							debugPrint("subtraction!");
+							debugPrint( "subtraction!" );
 							break;
 						case "*":
 						// multiplication
-							debugPrint("multiplication!");
+							debugPrint( "multiplication!" );
 							break;
 						case "/":
 						// division
-							debugPrint("division!");
+							debugPrint( "division!" );
 							break;
+						default:
+							debugPrint( "nothing!{character}" + character );
 					}
-				});
-				display = answer.toString();
+				} );
+				display = answer.toString( );
+				start = true;
 			}
 			else {
+				if ( start ) {
+					display = "";
+					answer = 0;
+					start = false;
+				}
 				display += char;
 			}
-		});
+		} );
 	}
 
-	Widget _button(String char) {
+	Widget _button( String char ) {
 		return RaisedButton(
-			onPressed: () {
-				_onPress(char, this.answer);
+			onPressed: ( ) {
+				_onPress( char );
 			},
 			child: Text(
 				char,
-				style: TextStyle(fontSize: 20),
-			),
+				style: TextStyle( fontSize: 20 ),
+				),
 			shape: CircleBorder(
 				side:
-				BorderSide(color: ThemeData
-						.light()
-						.buttonColor, width: 2.1, style: BorderStyle.solid),
-			),
+				BorderSide( color: ThemeData
+						.light( )
+						.buttonColor, width: 2.1, style: BorderStyle.solid ),
+				),
 			elevation: 5,
-		);
+			);
 	}
 
-	Widget _row(List<String> chars) {
-		List<Widget> buttons = new List();
-		for (var i = 0; i < chars.length; i++) {
-			buttons.add(_button(chars[i]));
+	Widget _row( List<String> chars ) {
+		List<Widget> buttons = new List( );
+		for ( var i = 0; i < chars.length; i++ ) {
+			buttons.add( _button( chars[i] ) );
 		}
 
 		return Row(
 			mainAxisAlignment: MainAxisAlignment.spaceEvenly,
 			children: buttons,
-		);
+			);
+	}
+
+	String _getDisplayText( ) {
+		String displayText = display;
+
+		if ( display.contains( "." )
+		     && display
+				        .split( "." )
+				        .last == 0.toString( ) ) {
+			displayText = int.parse( display
+					                         .split( "." )
+					                         .first ).toString( );
+		}
+
+		return displayText;
 	}
 
 	@override
-	Widget build(BuildContext context) {
+	Widget build( BuildContext context ) {
 		return Scaffold(
 				appBar: AppBar(
-					title: Text(widget.title),
-				),
+					title: Text( widget.title ),
+					),
 				body: SafeArea(
 					child: Container(
 							color: ThemeData
-									.light()
+									.light( )
 									.backgroundColor,
 							child: Column(
 								mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -120,44 +152,44 @@ class _MyHomePageState extends State<MyHomePage> {
 										mainAxisAlignment: MainAxisAlignment.end,
 										children: <Widget>[
 											Padding(
-												padding: const EdgeInsets.symmetric(horizontal: 8),
+												padding: const EdgeInsets.symmetric( horizontal: 8 ),
 												child: Text(
-//													answer == 0 ? answer.toInt().toString() : answer.toString(),
-													display,
-													style: TextStyle(fontSize: 34),
+													// Hide decimal point by converting to int if there's no decimal value
+													_getDisplayText( ),
+														style: TextStyle( fontSize: 34 ),
+													),
 												),
-											),
 										],
-									),
+										),
 									// Row for divider
 									Row(
 										children: <Widget>[
 											Expanded(
 												// Reimplement divider
-													child: SizedBox(
-														height: 3.0,
-														child: new Center(
-															child: new Container(
-																margin: new EdgeInsetsDirectional.only(start: 1.0, end: 1.0),
-																height: 3.0,
-																color: ThemeData
-																		.dark()
-																		.buttonColor,
+												child: SizedBox(
+													height: 3.0,
+													child: new Center(
+														child: new Container(
+															margin: new EdgeInsetsDirectional.only( start: 1.0, end: 1.0 ),
+															height: 3.0,
+															color: ThemeData
+																	.dark( )
+																	.buttonColor,
 															),
 														),
-													))
+													) )
 										],
-									),
+										),
 									// First row
-									_row(["1", "2", "3", "+"]),
+									_row( ["1", "2", "3", "+"] ),
 									// Second row
-									_row(["4", "5", "6", "-"]),
+									_row( ["4", "5", "6", "-"] ),
 									// Third row
-									_row(["7", "8", "9", "*"]),
+									_row( ["7", "8", "9", "*"] ),
 									// Fourth row
-									_row([".", "0", "=", "/"]),
+									_row( [".", "0", "=", "/"] ),
 								],
-							)),
-				));
+								) ),
+					) );
 	}
 }
