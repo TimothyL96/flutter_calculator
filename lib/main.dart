@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 void main() => runApp(MyApp());
 
@@ -34,20 +35,45 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 	double answer = 0;
+	String display = "";
 
-	@override
-	void setState(fn) {
-		answer = 1;
-		super.setState(fn);
-	}
-
-	void _onPress() {
-		setState(() => {});
+	void _onPress(String char, double ans) {
+		setState(() {
+			if (char == "=") {
+				char.runes.forEach((int rune) {
+					String character = String.fromCharCode(rune);
+					switch (character) {
+						case "+":
+						// addition
+							debugPrint("addition!");
+							break;
+						case "-":
+						// subtraction
+							debugPrint("subtraction!");
+							break;
+						case "*":
+						// multiplication
+							debugPrint("multiplication!");
+							break;
+						case "/":
+						// division
+							debugPrint("division!");
+							break;
+					}
+				});
+				display = answer.toString();
+			}
+			else {
+				display += char;
+			}
+		});
 	}
 
 	Widget _button(String char) {
 		return RaisedButton(
-			onPressed: _onPress,
+			onPressed: () {
+				_onPress(char, this.answer);
+			},
 			child: Text(
 				char,
 				style: TextStyle(fontSize: 20),
@@ -96,7 +122,8 @@ class _MyHomePageState extends State<MyHomePage> {
 											Padding(
 												padding: const EdgeInsets.symmetric(horizontal: 8),
 												child: Text(
-													answer == 0 ? answer.toInt().toString() : answer.toString(),
+//													answer == 0 ? answer.toInt().toString() : answer.toString(),
+													display,
 													style: TextStyle(fontSize: 34),
 												),
 											),
