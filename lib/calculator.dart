@@ -92,6 +92,9 @@ class Calculator {
 				// Append it to the same number buffer
 				sameNumber = sameNumber + currentChar;
 
+				// TODO skip first character and append it. First character is always related to the number even if it's a symbol
+				// TODO above check if is symbol also need to check previous is not symbol. Ex: 5+-5=0. Current logic will treat - as a symbol instead of number
+
 				// If last character is number or next character is a symbol
 				// Add the current buffered number to the characters list
 				if ( i == _display.length - 1 || _isSymbol( _display[i + 1] ) ) {
@@ -116,12 +119,12 @@ class Calculator {
 
 	// Loop through the character group and generate a complete calculator tree
 	void _generateCalculatorTree( List<String> characterGroup ) {
-
+		// TODO loop through characterGroup and generate CalculatorTree
 	}
 
 	// Main logic: Process the calculatorTree
 	double _processCharacterGroup( ) {
-		// TODO
+		// TODO process the calculator tree
 		return 0.0;
 	}
 }
