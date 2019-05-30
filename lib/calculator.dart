@@ -1,7 +1,11 @@
+import 'calculator_tree.dart';
+
 class Calculator {
 	double _answer;
 	String _display;
 	bool _start;
+
+	CalculatorTree calculatorTree;
 
 	// Symbol
 	static const String symbolPlus = "+";
@@ -71,9 +75,9 @@ class Calculator {
 	}
 
 	// If equal button is pressed
-	// We process character 1 by 1 and do recursive call instead of using a tree method
-	void equalPressed( String char ) {
-		List<String> characterGroup = new List( ); // Separate symbols and combine same number
+	// We process character 1 by 1 to group it
+	void preProcessInput( String char ) {
+		List<String> characterGroup = new List( ); // Separate symbols and combine consecutive number
 		String sameNumber = "";
 
 		// Go through the string character by character
@@ -97,8 +101,11 @@ class Calculator {
 			}
 		}
 
-		// Process the character group
-		_answer = _processCharacterGroup( characterGroup );
+		// Generate the calculator tree
+		_generateCalculatorTree( characterGroup );
+
+		// Process the calculator tree
+		_answer = _processCharacterGroup( );
 
 		// Convert double to string
 		_display = _answer.toString( );
@@ -107,8 +114,13 @@ class Calculator {
 		_start = true;
 	}
 
-	// Main logic
-	double _processCharacterGroup( List<String> characterGroup ) {
+	// Loop through the character group and generate a complete calculator tree
+	void _generateCalculatorTree( List<String> characterGroup ) {
+
+	}
+
+	// Main logic: Process the calculatorTree
+	double _processCharacterGroup( ) {
 		// TODO
 		return 0.0;
 	}

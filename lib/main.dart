@@ -107,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
 		setState( ( ) {
 			// If answer is requested, call _equalPressed
 			if ( char == "=" ) {
-				calculator.equalPressed( char );
+				calculator.preProcessInput( char );
 			}
 			else {
 				// Reset variables and set start to false
@@ -119,6 +119,19 @@ class _MyHomePageState extends State<MyHomePage> {
 				calculator.setDisplayText( calculator.getDisplayText( ) + char );
 			}
 		} );
+	}
+
+	// Return a row with buttons with input specified in the string list
+	Widget _row( List<String> chars ) {
+		List<Widget> buttons = new List( );
+		for ( int i = 0; i < chars.length; i++ ) {
+			buttons.add( _button( chars[i] ) );
+		}
+
+		return Row(
+			mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+			children: buttons,
+			);
 	}
 
 	// Return a button with specific char input
@@ -138,19 +151,6 @@ class _MyHomePageState extends State<MyHomePage> {
 						.buttonColor, width: 2.1, style: BorderStyle.solid ),
 				),
 			elevation: 5,
-			);
-	}
-
-	// Return a row with buttons with input specified in the string list
-	Widget _row( List<String> chars ) {
-		List<Widget> buttons = new List( );
-		for ( int i = 0; i < chars.length; i++ ) {
-			buttons.add( _button( chars[i] ) );
-		}
-
-		return Row(
-			mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-			children: buttons,
 			);
 	}
 }
