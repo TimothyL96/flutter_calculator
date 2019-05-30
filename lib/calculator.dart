@@ -3,11 +3,29 @@ class Calculator {
 	String _display;
 	bool _start;
 
+	// Symbol
+	static const String symbolPlus = "+";
+	static const String symbolMinus = "-";
+	static const String symbolMultiply = "*";
+	static const String symbolDivide = "/";
+	static const String symbolBracketOpen = "(";
+	static const String symbolBracketClose = ")";
+
+	// Store all possible symbols
+	static const List<String> symbols = [
+		symbolPlus,
+		symbolMinus,
+		symbolMultiply,
+		symbolDivide,
+		symbolBracketOpen,
+		symbolBracketClose,
+	];
+
 	// If character is any of the symbol return true
 	bool _isSymbol( String char ) {
 		bool isSymbol = false;
 
-		if ( char == "+" || char == "-" || char == "*" || char == "/" || char == "(" || char == ")" ) {
+		if ( symbols.contains( char ) ) {
 			isSymbol = true;
 		}
 

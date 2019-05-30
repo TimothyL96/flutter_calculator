@@ -144,7 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
 	// Return a row with buttons with input specified in the string list
 	Widget _row( List<String> chars ) {
 		List<Widget> buttons = new List( );
-		for ( var i = 0; i < chars.length; i++ ) {
+		for ( int i = 0; i < chars.length; i++ ) {
 			buttons.add( _button( chars[i] ) );
 		}
 
