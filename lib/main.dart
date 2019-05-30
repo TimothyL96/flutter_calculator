@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'calculator.dart';
 
 void main( ) => runApp( MyApp( ) );
 
@@ -33,103 +34,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-	double answer;
-	String display;
-	bool start;
+	Calculator calculator = new Calculator( );
 
 	@override
 	void initState( ) {
-		start = true;
-		display = "";
-		answer = 0;
+		calculator.resetVariables( true );
 		super.initState( );
-	}
-
-	void _onPress( String char ) {
-		setState( ( ) {
-			if ( char == "=" ) {
-				debugPrint( display );
-				display.runes.forEach( ( int rune ) {
-					String character = String.fromCharCode( rune );
-					switch ( character ) {
-						case "+":
-						// addition
-							debugPrint( "addition!" );
-							break;
-						case "-":
-						// subtraction
-							debugPrint( "subtraction!" );
-							break;
-						case "*":
-						// multiplication
-							debugPrint( "multiplication!" );
-							break;
-						case "/":
-						// division
-							debugPrint( "division!" );
-							break;
-						default:
-							debugPrint( "nothing!{character}" + character );
-					}
-				} );
-				display = answer.toString( );
-				start = true;
-			}
-			else {
-				if ( start ) {
-					display = "";
-					answer = 0;
-					start = false;
-				}
-				display += char;
-			}
-		} );
-	}
-
-	Widget _button( String char ) {
-		return RaisedButton(
-			onPressed: ( ) {
-				_onPress( char );
-			},
-			child: Text(
-				char,
-				style: TextStyle( fontSize: 20 ),
-				),
-			shape: CircleBorder(
-				side:
-				BorderSide( color: ThemeData
-						.light( )
-						.buttonColor, width: 2.1, style: BorderStyle.solid ),
-				),
-			elevation: 5,
-			);
-	}
-
-	Widget _row( List<String> chars ) {
-		List<Widget> buttons = new List( );
-		for ( var i = 0; i < chars.length; i++ ) {
-			buttons.add( _button( chars[i] ) );
-		}
-
-		return Row(
-			mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-			children: buttons,
-			);
-	}
-
-	String _getDisplayText( ) {
-		String displayText = display;
-
-		if ( display.contains( "." )
-		     && display
-				        .split( "." )
-				        .last == 0.toString( ) ) {
-			displayText = int.parse( display
-					                         .split( "." )
-					                         .first ).toString( );
-		}
-
-		return displayText;
 	}
 
 	@override
@@ -154,9 +64,8 @@ class _MyHomePageState extends State<MyHomePage> {
 											Padding(
 												padding: const EdgeInsets.symmetric( horizontal: 8 ),
 												child: Text(
-													// Hide decimal point by converting to int if there's no decimal value
-													_getDisplayText( ),
-														style: TextStyle( fontSize: 34 ),
+													calculator.getRoundedDisplayText( ),
+													style: TextStyle( fontSize: 34 ),
 													),
 												),
 										],
@@ -191,5 +100,57 @@ class _MyHomePageState extends State<MyHomePage> {
 								],
 								) ),
 					) );
+	}
+
+	// Action when button is pressed
+	void _onPress( String char ) {
+		setState( ( ) {
+			// If answer is requested, call _equalPressed
+			if ( char == "=" ) {
+				calculator.equalPressed( char );
+			}
+			else {
+				// Reset variables and set start to false
+				if ( calculator.getStartFlag( ) ) {
+					calculator.resetVariables( false );
+				}
+
+				// Add pressed button's character to the display
+				calculator.setDisplayText( calculator.getDisplayText( ) + char );
+			}
+		} );
+	}
+
+	// Return a button with specific char input
+	Widget _button( String char ) {
+		return RaisedButton(
+			onPressed: ( ) {
+				_onPress( char );
+			},
+			child: Text(
+				char,
+				style: TextStyle( fontSize: 20 ),
+				),
+			shape: CircleBorder(
+				side:
+				BorderSide( color: ThemeData
+						.light( )
+						.buttonColor, width: 2.1, style: BorderStyle.solid ),
+				),
+			elevation: 5,
+			);
+	}
+
+	// Return a row with buttons with input specified in the string list
+	Widget _row( List<String> chars ) {
+		List<Widget> buttons = new List( );
+		for ( var i = 0; i < chars.length; i++ ) {
+			buttons.add( _button( chars[i] ) );
+		}
+
+		return Row(
+			mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+			children: buttons,
+			);
 	}
 }
