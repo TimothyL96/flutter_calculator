@@ -16,7 +16,7 @@ class Calculator {
 	static const String symbolBracketClose = ")";
 
 	// Store all possible symbols
-	static const List<String> symbols = [
+	static const List<String> symbolsAll = [
 		symbolPlus,
 		symbolMinus,
 		symbolMultiply,
@@ -25,11 +25,19 @@ class Calculator {
 		symbolBracketClose,
 	];
 
+	// All symbols used in arithmetic operations
+	static const List<String> symbolsArithmetic = [
+		symbolPlus,
+		symbolMinus,
+		symbolMultiply,
+		symbolDivide,
+	];
+
 	// If character is any of the symbol return true
 	bool _isSymbol( String char ) {
 		bool isSymbol = false;
 
-		if ( symbols.contains( char ) ) {
+		if ( symbolsAll.contains( char ) ) {
 			isSymbol = true;
 		}
 
@@ -78,22 +86,24 @@ class Calculator {
 	// We process character 1 by 1 to group it
 	void preProcessInput( String char ) {
 		List<String> characterGroup = new List( ); // Separate symbols and combine consecutive number
-		String sameNumber = "";
+		String sameNumber = _display[0];
+
+		if ( !_isSymbol( sameNumber ) && _display.length == 1 ) {
+			characterGroup.add( sameNumber );
+		}
 
 		// Go through the string character by character
-		for ( var i = 0; i < _display.length; i++ ) {
+		for ( var i = 1; i < _display.length; i++ ) {
 			String currentChar = _display[i];
 
 			// If character is symbol then add it to character group
 			// else it's a number. Therefore append the number in to string
-			if ( _isSymbol( currentChar ) ) {
+			if ( _isSymbol( currentChar ) &&
+			     !(currentChar == symbolMultiply && symbolsArithmetic.contains( _display[i - 1] )) ) {
 				characterGroup.add( currentChar );
 			} else {
 				// Append it to the same number buffer
 				sameNumber = sameNumber + currentChar;
-
-				// TODO skip first character and append it. First character is always related to the number even if it's a symbol
-				// TODO above check if is symbol also need to check previous is not symbol. Ex: 5+-5=0. Current logic will treat - as a symbol instead of number
 
 				// If last character is number or next character is a symbol
 				// Add the current buffered number to the characters list
@@ -104,6 +114,9 @@ class Calculator {
 			}
 		}
 
+		characterGroup.forEach( ( s ) {
+			print( s );
+		} );
 		// Generate the calculator tree
 		_generateCalculatorTree( characterGroup );
 
