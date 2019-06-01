@@ -97,6 +97,8 @@ class _MyHomePageState extends State<MyHomePage> {
 									_row( ["7", "8", "9", "*"] ),
 									// Fourth row
 									_row( [".", "0", "=", "/"] ),
+									// Fifth row
+									_row( ["", "", "(", ")"] ),
 								],
 								) ),
 					) );

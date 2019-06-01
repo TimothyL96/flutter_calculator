@@ -1,11 +1,12 @@
 import 'calculator_tree.dart';
+import 'package:flutter/material.dart';
 
 class Calculator {
 	double _answer;
 	String _display;
 	bool _start;
 
-	CalculatorTree calculatorTree;
+	CalculatorTree calculatorTreeRoot;
 
 	// Symbol
 	static const String symbolPlus = "+";
@@ -31,6 +32,24 @@ class Calculator {
 		symbolMinus,
 		symbolMultiply,
 		symbolDivide,
+	];
+
+	// Symbols used in arithmetic operations with low priority
+	static const List<String> symbolsArithmeticPriorityLow = [
+		symbolPlus,
+		symbolMinus,
+	];
+
+	// Symbols used in arithmetic operations with high priority
+	static const List<String> symbolsArithmeticPriorityHigh = [
+		symbolMultiply,
+		symbolDivide,
+	];
+
+	// Open and close bracket symbol
+	static const List<String> symbolsBrackets = [
+		symbolBracketOpen,
+		symbolBracketClose,
 	];
 
 	// If character is any of the symbol return true
@@ -90,6 +109,12 @@ class Calculator {
 
 		if ( !_isSymbol( sameNumber ) && _display.length == 1 ) {
 			characterGroup.add( sameNumber );
+			sameNumber = "";
+		}
+
+		if ( _display.length > 1 && _isSymbol( _display[1] ) ) {
+			characterGroup.add( sameNumber );
+			sameNumber = "";
 		}
 
 		// Go through the string character by character
@@ -99,7 +124,7 @@ class Calculator {
 			// If character is symbol then add it to character group
 			// else it's a number. Therefore append the number in to string
 			if ( _isSymbol( currentChar ) &&
-			     !(currentChar == symbolMultiply && symbolsArithmetic.contains( _display[i - 1] )) ) {
+			     !(currentChar == symbolMinus && symbolsArithmetic.contains( _display[i - 1] )) ) {
 				characterGroup.add( currentChar );
 			} else {
 				// Append it to the same number buffer
@@ -114,11 +139,9 @@ class Calculator {
 			}
 		}
 
-		characterGroup.forEach( ( s ) {
-			print( s );
-		} );
 		// Generate the calculator tree
-		_generateCalculatorTree( characterGroup );
+		calculatorTreeRoot = _generateCalculatorTree( characterGroup );
+		printDebugTree( calculatorTreeRoot );
 
 		// Process the calculator tree
 		_answer = _processCharacterGroup( );
@@ -130,12 +153,91 @@ class Calculator {
 		_start = true;
 	}
 
-	// Loop through the character group and generate a complete calculator tree
-	void _generateCalculatorTree( List<String> characterGroup ) {
-		// TODO loop through characterGroup and generate CalculatorTree
+	void printDebugTree( CalculatorTree calculatorTree ) {
+		debugPrint( "node: " + calculatorTree.node );
+		if ( calculatorTree.leftChild != null ) {
+			debugPrint( "left child: " );
+			printDebugTree( calculatorTree.leftChild );
+		}
+		if ( calculatorTree.rightChild != null ) {
+			debugPrint( "right child: " );
+			printDebugTree( calculatorTree.rightChild );
+		}
 	}
 
-	// Main logic: Process the calculatorTree
+	// Loop through the character group and generate a complete calculator tree
+	CalculatorTree _generateCalculatorTree( List<String> characterGroup ) {
+		CalculatorTree calculatorTreeCurrent;
+		CalculatorTree calculatorTreeRoot;
+		bool hasOpenBracket = false;
+		List<String> bracketBody = new List( );
+
+		// If only one exist
+		if ( characterGroup.length == 1 ) {
+			calculatorTreeCurrent =
+			new CalculatorTree( characterGroup[0], null, null );
+			calculatorTreeRoot = calculatorTreeCurrent;
+			return calculatorTreeRoot;
+		}
+
+		// Iterate all character groups
+		for ( int i = 1; i < characterGroup.length; i++ ) {
+			String character = characterGroup[i];
+
+			// First iteration
+			if ( calculatorTreeCurrent == null ) {
+				calculatorTreeCurrent =
+				new CalculatorTree( character, new CalculatorTree( characterGroup[i - 1], null, null ),
+						                    new CalculatorTree( characterGroup[i + 1], null, null ) );
+
+				calculatorTreeRoot = calculatorTreeCurrent;
+				continue;
+			}
+
+			if ( symbolsBrackets.contains( character ) ) {
+				if ( character == symbolBracketOpen ) {
+					hasOpenBracket = true;
+					continue;
+				}
+				else if ( character == symbolBracketClose ) {
+					if ( !hasOpenBracket ) {
+						Error( ); // Return error
+					} else {
+						calculatorTreeCurrent = _generateCalculatorTree( bracketBody );
+						hasOpenBracket = false;
+						bracketBody.clear( );
+					}
+				}
+			} else if ( hasOpenBracket ) {
+				// Append
+				bracketBody.add( character );
+			}
+			else {
+				// Symbols will be divided to each value excluding those negative numbers
+				if ( symbolsArithmetic.contains( character ) ) {
+					// If symbol has priority high
+					if ( symbolsArithmeticPriorityHigh.contains( character ) ) {
+						calculatorTreeCurrent.rightChild =
+						new CalculatorTree( character, new CalculatorTree( characterGroup[i - 1], null, null ),
+								                    new CalculatorTree( characterGroup[i + 1], null, null ) );
+						calculatorTreeCurrent = calculatorTreeCurrent.rightChild;
+					}
+
+					// If symbol has priority low
+					else if ( symbolsArithmeticPriorityLow.contains( character ) ) {
+						calculatorTreeCurrent = new CalculatorTree(
+								character, calculatorTreeRoot,
+								new CalculatorTree( characterGroup[i + 1], null, null ) );
+						calculatorTreeRoot = calculatorTreeCurrent;
+					}
+				}
+			}
+		}
+
+		return calculatorTreeRoot;
+	}
+
+	// Main calculation: Process the calculatorTree
 	double _processCharacterGroup( ) {
 		// TODO process the calculator tree
 		return 0.0;
