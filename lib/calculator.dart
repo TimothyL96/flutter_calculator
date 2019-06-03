@@ -103,6 +103,7 @@ class Calculator {
 
 	// If equal button is pressed
 	// We process character 1 by 1 to group it
+	// TODO add * if no symbol between numbers and bracket
 	void preProcessInput( String char ) {
 		List<String> characterGroup = new List( ); // Separate symbols and combine consecutive number
 		String sameNumber = _display[0];
@@ -153,6 +154,7 @@ class Calculator {
 		_start = true;
 	}
 
+	// TODO print a proper tree
 	void printDebugTree( CalculatorTree calculatorTree ) {
 		debugPrint( "node: " + calculatorTree.node );
 		if ( calculatorTree.leftChild != null ) {
@@ -203,7 +205,8 @@ class Calculator {
 					if ( !hasOpenBracket ) {
 						Error( ); // Return error
 					} else {
-						calculatorTreeCurrent = _generateCalculatorTree( bracketBody );
+						calculatorTreeCurrent.rightChild = _generateCalculatorTree( bracketBody );
+
 						hasOpenBracket = false;
 						bracketBody.clear( );
 					}
@@ -217,10 +220,21 @@ class Calculator {
 				if ( symbolsArithmetic.contains( character ) ) {
 					// If symbol has priority high
 					if ( symbolsArithmeticPriorityHigh.contains( character ) ) {
-						calculatorTreeCurrent.rightChild =
-						new CalculatorTree( character, new CalculatorTree( characterGroup[i - 1], null, null ),
-								                    new CalculatorTree( characterGroup[i + 1], null, null ) );
-						calculatorTreeCurrent = calculatorTreeCurrent.rightChild;
+						if ( calculatorTreeCurrent.rightChild != null ) {
+							// bracket existed
+							CalculatorTree calculatorTreeTemp = calculatorTreeCurrent.rightChild;
+							calculatorTreeCurrent.rightChild =
+							new CalculatorTree( character, calculatorTreeTemp,
+									                    new CalculatorTree( characterGroup[i + 1], null, null ) );
+							calculatorTreeCurrent = calculatorTreeCurrent.rightChild;
+						} else {
+							calculatorTreeCurrent.rightChild =
+							new CalculatorTree(
+									character, new CalculatorTree( characterGroup[i - 1], null, null ),
+									new CalculatorTree( characterGroup[i + 1], null, null ),
+									calculatorTreeCurrent );
+							calculatorTreeCurrent = calculatorTreeCurrent.rightChild;
+						}
 					}
 
 					// If symbol has priority low
